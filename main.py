@@ -1,4 +1,7 @@
 import numpy as np
+from time import sleep
+from os import system
+
 HEIGHT = 6
 WIDTH = 6
 GRID_SIZE = HEIGHT, WIDTH
@@ -113,8 +116,9 @@ def count_neighbours(row, col):
 
 if __name__ == '__main__':
     
-    print(GRID)
+    # print(GRID)
     while True:
+        print(GRID, flush=True)
         to_live = []
         to_die = []
         for row in range(HEIGHT):
@@ -132,14 +136,11 @@ if __name__ == '__main__':
                     # kill cell
                     to_die.append((row, col))
         
-        # print('To live')
-        # print(to_live)
-        # print('To die')
-        # print(to_die)
         for life in to_live:
             GRID[life[0], life[1]] = 1
         
         for death in to_die:
             GRID[death[0], death[1]] = 0
-        # print('\n'*3)
-        print(GRID)
+
+        sleep(0.5)
+        system("clear") #Could use escape sequences for this to repostion cursor instead of using system clear or cls
