@@ -1,145 +1,49 @@
+#!.\venv\Scripts\python
 import numpy as np
 from time import sleep
-from os import system
 
 HEIGHT = 6
 WIDTH = 6
 GRID_SIZE = HEIGHT, WIDTH
 GRID = np.zeros(GRID_SIZE)
-GRID[2,2] = 1
-GRID[2,3] = 1
-GRID[2,4] = 1
-GRID[3,1] = 1
-GRID[3,2] = 1
-GRID[3,3] = 1
+GRID[2, 2] = 1
+GRID[2, 3] = 1
+GRID[2, 4] = 1
+GRID[3, 1] = 1
+GRID[3, 2] = 1
+GRID[3, 3] = 1
+
 
 def reset_cursor(height: int, width: int):
     print(f"\033[{height}A", end="")
     print(f"\033[{width}D", end="")
+
 
 def is_in_bounds(height: int, width: int, row: int, col: int) -> bool:
     if 0 <= row <= height - 1 and 0 <= col <= width - 1:
         return True
     return False
 
+
 def count_neighbours(row: int, col: int) -> int:
+    # Moore Neighbours
+    # 8 surrounding cells
     count = 0
     for row_delta in range(-1, 2):
         for col_delta in range(-1, 2):
             if row_delta == 0 and col_delta == 0:
-                continue
-            elif is_in_bounds(HEIGHT, WIDTH, row+row_delta, col+col_delta):
-                count += GRID[row, col]
+                pass
+            elif is_in_bounds(HEIGHT, WIDTH, row + row_delta, col + col_delta):
+                count += GRID[row + row_delta, col + col_delta]
     return count
 
-# def count_north(row, col):
-#     return GRID[row-1, col]
 
-# def count_south(row, col):
-#     return GRID[row+1, col]
+if __name__ == "__main__":
 
-# def count_west(row, col):
-#     return GRID[row, col-1]
-
-# def count_east(row, col):
-#     return GRID[row, col+1]
-
-# def count_nw(row, col):
-#     return GRID[row-1, col-1]
-
-# def count_sw(row, col):
-#     return GRID[row+1, col-1]
-
-# def count_ne(row, col):
-#     return GRID[row-1, col+1]
-
-# def count_se(row, col):
-#     return GRID[row+1, col+1]
-
-# def count_neighbours(row, col):
-#     count = 0
-
-#     # Moore Neighbours
-#     # 8 surrounding cells
-
-#     # corner cells 'edge case'
-#     # top left corner
-#     if row == 0 and col == 0:
-#         count += count_east(row, col)
-#         count += count_se(row, col)
-#         count += count_south(row, col)
-    
-#     # top right corner
-#     elif row == 0 and col == WIDTH-1:
-#         count += count_west(row, col)
-#         count += count_sw(row, col)
-#         count += count_south(row, col)
-
-#     # bottom left corner
-#     elif row == HEIGHT-1 and col == 0:
-#         count += count_north(row, col)
-#         count += count_ne(row, col)
-#         count += count_east(row, col)
-    
-#     # bottom right corner
-#     elif row == HEIGHT-1 and col == WIDTH-1:
-#         count += count_west(row, col)
-#         count += count_nw(row, col)
-#         count += count_north(row, col)
-    
-#     # border 'edge' cases
-#     elif col == 0:
-#         # dont count any on left
-#         count += count_north(row, col)
-#         count += count_ne(row, col)
-#         count += count_east(row, col)
-#         count += count_se(row, col)
-#         count += count_south(row, col)
-
-#     elif col == WIDTH-1:
-#         # dont count any on right
-#         count += count_north(row, col)
-#         count += count_nw(row, col)
-#         count += count_west(row, col)
-#         count += count_sw(row, col)
-#         count += count_south(row, col)
-
-#     elif row == 0:
-#         # dont count any on top
-#         count += count_west(row, col)
-#         count += count_sw(row, col)
-#         count += count_south(row, col)
-#         count += count_se(row, col)
-#         count += count_east(row, col)
-
-#     elif row == HEIGHT-1:
-#         # dont count any on bottom
-#         count += count_west(row, col)
-#         count += count_nw(row, col)
-#         count += count_north(row, col)
-#         count += count_ne(row, col)
-#         count += count_east(row, col)
-
-#     else:
-#         # count all 8
-#         count += count_west(row, col)
-#         count += count_nw(row, col)
-#         count += count_north(row, col)
-#         count += count_ne(row, col)
-#         count += count_east(row, col)
-#         count += count_se(row, col)
-#         count += count_south(row, col)
-#         count += count_sw(row, col)
-
-#     return count
-
-if __name__ == '__main__':
-    
     # print(GRID)
     while True:
         print(GRID, flush=True)
-        to_live = []
-        to_die = []
+        new_grid = {}
         for row in range(HEIGHT):
             for col in range(WIDTH):
 
@@ -149,19 +53,14 @@ if __name__ == '__main__':
 
                 elif count_neighbours(row, col) == 3:
                     # make cell alive
-                    to_live.append((row, col))
+                    new_grid[(row, col)] = 1
 
                 else:
                     # kill cell
-                    to_die.append((row, col))
-        
-        for life in to_live:
-            GRID[life[0], life[1]] = 1
-        
-        for death in to_die:
-            GRID[death[0], death[1]] = 0
+                    new_grid[(row, col)] = 0
+
+        for cell, state in new_grid.items():
+            GRID[cell[0], cell[1]] = state
 
         sleep(0.5)
         reset_cursor(HEIGHT, WIDTH)
-
-        # system("clear") #Could use escape sequences for this to repostion cursor instead of using system clear or cls
