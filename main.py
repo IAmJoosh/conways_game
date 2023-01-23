@@ -1,17 +1,26 @@
 #!.\venv\Scripts\python
 import numpy as np
 from time import sleep
+from enum import IntEnum
 
 HEIGHT = 6
 WIDTH = 6
 GRID_SIZE = HEIGHT, WIDTH
 GRID = np.zeros(GRID_SIZE)
+
+# Setting up an example grid
+# TODO: Allow this to be set up in terminal
 GRID[2, 2] = 1
 GRID[2, 3] = 1
 GRID[2, 4] = 1
 GRID[3, 1] = 1
 GRID[3, 2] = 1
 GRID[3, 3] = 1
+
+
+class Cell_State(IntEnum):
+    DEAD = 0
+    ALIVE = 1
 
 
 def reset_cursor(height: int, width: int):
@@ -40,7 +49,6 @@ def count_neighbours(row: int, col: int) -> int:
 
 if __name__ == "__main__":
 
-    # print(GRID)
     while True:
         print(GRID, flush=True)
         new_grid = {}
@@ -53,11 +61,11 @@ if __name__ == "__main__":
 
                 elif count_neighbours(row, col) == 3:
                     # make cell alive
-                    new_grid[(row, col)] = 1
+                    new_grid[(row, col)] = Cell_State.ALIVE
 
                 else:
                     # kill cell
-                    new_grid[(row, col)] = 0
+                    new_grid[(row, col)] = Cell_State.DEAD
 
         for cell, state in new_grid.items():
             GRID[cell[0], cell[1]] = state
